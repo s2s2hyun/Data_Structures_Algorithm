@@ -10,6 +10,7 @@ deque.addFirst(3);
 deque.addFirst(4);
 deque.addFirst(5);
 deque.printAll();
+// 덱이 비었는지 isEmpty() 함수 출력
 console.log(`isEmpty: ${deque.isEmpty()}`);
 console.log("\n");
 
