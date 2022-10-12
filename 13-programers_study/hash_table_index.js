@@ -1,10 +1,11 @@
 // 베스트앨범
+
 // 문제 설명
 // 스트리밍 사이트에서 장르 별로 가장 많이 재생된 노래를 두 개씩 모아 베스트 앨범을 출시하려 합니다. 노래는 고유 번호로 구분하며, 노래를 수록하는 기준은 다음과 같습니다.
 
-// 속한 노래가 많이 재생된 장르를 먼저 수록합니다.
-// 장르 내에서 많이 재생된 노래를 먼저 수록합니다.
-// 장르 내에서 재생 횟수가 같은 노래 중에서는 고유 번호가 낮은 노래를 먼저 수록합니다.
+// 1.속한 노래가 많이 재생된 장르를 먼저 수록합니다.
+// 2.장르 내에서 많이 재생된 노래를 먼저 수록합니다.
+// 3.장르 내에서 재생 횟수가 같은 노래 중에서는 고유 번호가 낮은 노래를 먼저 수록합니다.
 // 노래의 장르를 나타내는 문자열 배열 genres와 노래별 재생 횟수를 나타내는 정수 배열 plays가 주어질 때, 베스트 앨범에 들어갈 노래의 고유 번호를 순서대로
 // return 하도록 solution 함수를 완성하세요.
 
@@ -34,7 +35,31 @@
 
 // 풀이 보기전에 혼자서 해보자 !!
 
+// 1. 같은 장르끼리 묶어야 해요 .
+// 2. 묶인 노래들을 재생 순으로 정렬을 해야합니다.
+// 3. 노래를 2개까지 자르는 작업을 해야합니다.
+// 핵심 키워드는 " 묶는 것 " , "정렬"
+
 function solution(genres, plays) {
-    var answer = [];
-    return answer;
+    const genreMap = new Map();
+
+    genres
+        .map((genre, index) => [genre, plays[index]])
+        // 비 구조화 할당을 이용해 편리하게 할수있다.
+        .forEach(([genre, play], index) => {
+            const data = genreMap.get(genre) || { total: 0, songs: [] };
+            genreMap.set(genre, {
+                total: data.total + play,
+                songs: [...data.songs, { play, index }].sort((a, b) => b.play - a.play).slice(0, 2),
+            });
+        });
+    // entries 이터레이블 객체를 반환하기 때문에 배열을 만들어 주기 위해서 아래와 같이 만들어 줘야한다.
+    // console.log([...genreMap.entries()]) 확인해보면 배열안에 데이터가 잘 들어가져있는걸 볼수 있다.
+    // flatMap() 을 이용해서 두번째 오브젝트에 있는 노래들을 하나의 배열로 만들어줄것이다. flatMap이 아닌 map 을 사용하면
+    // 리스트 안에 리스트로 들어가게 됨으로 flatMap을 사용해야한다.
+
+    return [...genreMap.entries()]
+        .sort((a, b) => b[1].total - a[1].total)
+        .flatMap((item) => item[1].songs)
+        .map((song) => song.index);
 }
